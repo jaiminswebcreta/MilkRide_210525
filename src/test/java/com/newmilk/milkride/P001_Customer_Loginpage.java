@@ -188,6 +188,21 @@ public class P001_Customer_Loginpage {
             System.out.println("\nBrowser closed.");
         }
     }
+    public void performLoginToOtpPage() {
+        System.out.println("\n--- Performing Login Action ---");
+        WebElement mobileInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@placeholder='Enter Mobile Number']")));
+        mobileInput.sendKeys(mobileNumber); // Ensure 'mobileNumber' variable is correctly set in your class
+        System.out.println("Entered mobile number: " + mobileNumber);
+
+        WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space()='Continue']")));
+        continueButton.click();
+        System.out.println("Clicked 'Continue' button.");
+
+        // Wait for the OTP page to load by checking for a URL change or a unique element
+        // Using URL contains as an example, adjust if needed
+        wait.until(ExpectedConditions.urlContains("/customer/otp"));
+        System.out.println("Successfully navigated to OTP page. Current URL: " + driver.getCurrentUrl());
+    }
 
     public static void main(String[] args) {
     	P001_Customer_Loginpage verifier = new P001_Customer_Loginpage();
@@ -196,6 +211,7 @@ public class P001_Customer_Loginpage {
             verifier.verifyPageUrlAndTitle();
             verifier.verifyUiElementsText();
             verifier.verifyTermsOfServiceLink();
+            verifier.performLoginToOtpPage();
             // Ensure the page is in the correct state before verifying the next link
             if (!verifier.driver.getCurrentUrl().equals(verifier.loginPageUrl)) {
                  verifier.driver.get(verifier.loginPageUrl); // Re-navigate if necessary

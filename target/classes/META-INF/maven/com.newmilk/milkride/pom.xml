@@ -76,11 +76,11 @@
       <version>5.1.1</version>
     </dependency>
     
-    <dependency>
+  <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-simple</artifactId>
-    <version>2.0.13</version> <!-- Use a recent version -->
-    <scope>test</scope> <!-- Or runtime if you run main methods from src/main/java -->
+    <version>2.0.13</version>
+    <!-- <scope>runtime</scope> or remove scope line if main class is in src/main/java -->
 </dependency>
   </dependencies>
 

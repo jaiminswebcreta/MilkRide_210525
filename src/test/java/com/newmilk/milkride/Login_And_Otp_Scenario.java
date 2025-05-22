@@ -1,5 +1,6 @@
 package com.newmilk.milkride;
 
+import pages.HomePage;
 import pages.LoginPage;
 import pages.OtpVerificationPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -47,14 +48,17 @@ public class Login_And_Otp_Scenario { // Renamed for clarity
         loginPage.verifyUiElements();
 
         // Optionally verify links (ensure your loginPage has these methods)
-        // loginPage.verifyTermsOfServiceLink();
-        // loginPage.verifyPrivacyPolicyLink();
+         loginPage.verifyTermsOfServiceLink();
+         loginPage.verifyPrivacyPolicyLink();
 
         // 3. Perform login and get to OTP Page
         OtpVerificationPage otpPage = loginPage.clickContinueWithMobile(mobileNumber);
 
         // 4. Perform actions on OTP Page
         otpPage.verifyElements();
+        HomePage homePage = otpPage.enterOtpFromHeaderAndSubmit(); // This now extracts, enters, and submits OTP
+
+        homePage.verifyNavigationToHomePage(); // Verify elements on the home page
 
         System.out.println("\n\n*** Login and OTP Scenario completed successfully! ***");
     }

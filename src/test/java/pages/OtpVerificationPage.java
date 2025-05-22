@@ -24,10 +24,7 @@ public class OtpVerificationPage {
     // private By submitButtonLocator = By.xpath("//button[normalize-space()='Submit']"); // Your previous XPath
     private By submitButtonLocator = By.xpath("//button[@id='submitButton']"); // Your NEW XPath from the image
 
-    // Locators for Home Page verification
-    private By successfulLoginToastLocator = By.xpath("(//div[@class='toast-body'])"); // Adjust if needed
-    private By homePageUniqueElementLocator = By.xpath("(//h4[normalize-space()='Categories'])[1]"); // Example: "Categories" header on home page
-
+   
 
     public OtpVerificationPage(WebDriver driver, WebDriverWait wait, String mobileNumber) {
         this.driver = driver;
@@ -105,6 +102,8 @@ public class OtpVerificationPage {
         System.out.println("Submit button text: '" + submitButton.getText().trim() + "' - Verified");
 
         System.out.println("Initial OTP page elements verified.");
+    
+    
     }
 
     // New combined method for the OTP flow on this page

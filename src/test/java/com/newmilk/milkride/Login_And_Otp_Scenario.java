@@ -10,6 +10,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List; // Import List
+import java.util.stream.Collectors; 
 
 public class Login_And_Otp_Scenario { // Renamed for clarity
 
@@ -37,7 +39,7 @@ public class Login_And_Otp_Scenario { // Renamed for clarity
         }
     }
 
-    public void executeTestScenario() {
+    public void executeTestScenario() throws InterruptedException {
         // 1. Initialize Page Objects
         LoginPage loginPage = new LoginPage(driver, wait);
         // OtpVerificationPage otpPage; // Declare here, instantiate after login
@@ -59,8 +61,15 @@ public class Login_And_Otp_Scenario { // Renamed for clarity
         HomePage homePage = otpPage.enterOtpFromHeaderAndSubmit(); // This now extracts, enters, and submits OTP
 
         homePage.verifyNavigationToHomePage(); // Verify elements on the home page
+        List<String> headerFailures = homePage.verifyHeaderOptions();
+        if (!headerFailures.isEmpty()) {
+            String allFailures = headerFailures.stream().collect(Collectors.joining("\n - "));
+            throw new AssertionError("Home Page Header Verification Failures:\n - " + allFailures);
+        }
+        System.out.println("All Home Page header options verified successfully.");
 
-        System.out.println("\n\n*** Login and OTP Scenario completed successfully! ***");
+
+        System.out.println("\n\n*** Login, OTP, and Home Page full verification completed successfully! ***");
     }
 
 

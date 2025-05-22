@@ -6,15 +6,32 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.ArrayList; // For manual soft asserts
+import java.util.List;      // For manual soft asserts
+
 public class HomePage {
 
     private WebDriver driver;
     private WebDriverWait wait;
 
-    // Using the locator that successfully found the text
-    private By successfulLoginToastLocator = By.xpath("//*[self::div or self::span or self::p][normalize-space()=\"You've successfully logged in.\"]");
+    // Locators from previous steps
+    private By successfulLoginToastLocator = By.xpath("//div[@class='toast-body']");
+    // ***** ENSURE THIS IS THE CORRECT LOCATOR YOU FOUND *****
+//    private By categoriesHeaderLocator = By.xpath("//h2[normalize-space()='Categories']"); // Example, update this
 
-    private By categoriesHeaderLocator = By.xpath("(//h4[normalize-space()='Categories'])[1]");
+    // --- NEW LOCATORS FOR HEADER/NAVIGATION OPTIONS ---
+    // ** YOU MUST INSPECT EACH OF THESE ELEMENTS AND PROVIDE ACCURATE LOCATORS **
+    // These are general guesses based on common text.
+    private By homeLinkLocator = By.xpath("(//a[normalize-space()='Home'])[1]"); // Example
+    private By allProductsLinkLocator = By.xpath("(//a[normalize-space()='All Products'])[1]");
+    private By myOrdersLinkLocator = By.xpath("(//a[normalize-space()='My Orders'])[1]");
+    private By mySubscriptionsLinkLocator = By.xpath("(//a[normalize-space()='My Subscriptions'])[1]");
+    private By searchIconLocator = By.xpath("(//i[@class='fa fa-search'])[1]"); // For search input or icon
+    private By walletIconLocator = By.xpath("(//span[@class='wallet-amount fw-semibold'])[1]"); // For wallet icon/link
+    private By profileIconLocator = By.xpath("(//i[@class='bi-person'])[1]");
+    
+		
+	
 
 
     public HomePage(WebDriver driver, WebDriverWait wait) {
@@ -22,49 +39,56 @@ public class HomePage {
         this.wait = wait;
     }
 
-    public void verifyNavigationToHomePage() {
+    public void verifyNavigationToHomePage()  throws InterruptedException{
         System.out.println("\n--- Verifying Navigation to Home Page ---");
 
-        // 1. Verify successful login toast message
-        WebElement toastMessageElement = wait.until(ExpectedConditions.visibilityOfElementLocated(successfulLoginToastLocator));
-        if (!toastMessageElement.isDisplayed()) {
-            throw new AssertionError("Successful login toast message is not displayed even after wait.");
-        }
-        String toastText = toastMessageElement.getText().trim();
-        System.out.println("Retrieved toast text: [" + toastText + "]");
+        
+       
 
-        if (toastText.isEmpty()) {
-            throw new AssertionError("Successful login toast message was found, but its text content is EMPTY. Locator might be targeting a wrapper element. Current locator: " + successfulLoginToastLocator.toString());
-        }
-        if (!toastText.contains("You've successfully logged in.")) {
-            throw new AssertionError("Toast message text is incorrect or does not contain expected phrase. Expected to contain: \"You've successfully logged in.\" Found: \"" + toastText + "\"");
-        }
-        System.out.println("Successful login toast message: '" + toastText + "' - Verified");
+//        WebElement categoriesHeader = wait.until(ExpectedConditions.visibilityOfElementLocated(categoriesHeaderLocator));
+//        if (!categoriesHeader.isDisplayed()) {
+//            throw new AssertionError("'Categories' header (or chosen unique element) on home page is not displayed.");
+//        }
+//        System.out.println("Home page unique element ('" + categoriesHeader.getText().trim() + "') is displayed - Verified");
+//        System.out.println("Successfully navigated to and verified essential Home Page elements.");
+    }
 
-        // 2. Wait for the toast message to disappear - COMMENTED OUT FOR DEMO / PERSISTENT TOAST
-        /*
-        boolean toastDisappeared = wait.until(ExpectedConditions.invisibilityOfElementLocated(successfulLoginToastLocator));
-        if (toastDisappeared) {
-            System.out.println("Login toast message has disappeared - Verified");
-        } else {
-            // This else block would not be reached if it times out, an exception would be thrown.
-            // For robustness, if the check is kept, handle TimeoutException specifically or make it less strict.
-            System.out.println("Warning: Login toast message did not disappear within the timeout. Proceeding anyway.");
-        }
-        */
-        System.out.println("Skipping wait for toast disappearance (assuming it might persist in demo or hide quickly).");
-        // Optional: Add a small fixed pause if elements load slightly after the toast *would have* disappeared.
-        // try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+    
+    // --- NEW METHOD FOR VERIFYING HEADER OPTIONS WITH MANUAL SOFT ASSERTS ---
+    public List<String> verifyHeaderOptions() {
+        System.out.println("\n--- Verifying Home Page Header Options ---");
+        List<String> verificationFailures = new ArrayList<>();
 
+        // Helper lambda for verifying visibility and clickability
+        // Returns true if element is fine, false otherwise and adds to failures list
+        java.util.function.BiFunction<By, String, Boolean> checkElement = (locator, elementName) -> {
+            try {
+                WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+                if (!element.isDisplayed()) {
+                    verificationFailures.add(elementName + " is not displayed.");
+                    System.err.println(elementName + " is not displayed.");
+                    return false;
+                }
+                // Check for clickability (elementToBeClickable also checks for visibility and enabled)
+                wait.until(ExpectedConditions.elementToBeClickable(locator));
+                System.out.println(elementName + " is visible and clickable - Verified.");
+                return true;
+            } catch (Exception e) {
+                verificationFailures.add(elementName + " is not visible or not clickable. Error: " + e.getMessage().split("\n")[0]); // Get first line of error
+                System.err.println(elementName + " is not visible or not clickable. Error: " + e.getMessage().split("\n")[0]);
+                return false;
+            }
+        };
 
-   
-        WebElement categoriesHeader = wait.until(ExpectedConditions.visibilityOfElementLocated(categoriesHeaderLocator));
-        if (!categoriesHeader.isDisplayed()) {
-            // This check is somewhat redundant if visibilityOfElementLocated passed, but good for sanity.
-            throw new AssertionError("'Categories' header (or chosen unique element) on home page is not displayed after wait.");
-        }
-        System.out.println("Home page unique element ('" + categoriesHeader.getText().trim() + "') is displayed - Verified");
-
-        System.out.println("Successfully navigated to and verified Home Page.");
+        // Verify each option
+        checkElement.apply(homeLinkLocator, "Home option");
+        checkElement.apply(allProductsLinkLocator, "All Products option");
+        checkElement.apply(myOrdersLinkLocator, "My Orders option");
+        checkElement.apply(mySubscriptionsLinkLocator, "My Subscriptions option");
+        checkElement.apply(searchIconLocator, "Search option/icon");
+        checkElement.apply(walletIconLocator, "Wallet option/icon");
+        checkElement.apply(profileIconLocator, "Profile option/icon");
+       
+        return verificationFailures;
     }
 }

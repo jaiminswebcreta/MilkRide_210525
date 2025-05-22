@@ -82,6 +82,13 @@
     <version>2.0.13</version>
     <!-- <scope>runtime</scope> or remove scope line if main class is in src/main/java -->
 </dependency>
+<!-- Add this if you want to use TestNG's SoftAssert -->
+<dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.10.2</version> <!-- Or a newer stable version -->
+    <scope>compile</scope> <!-- Or test, if you move tests to src/test/java -->
+</dependency>
   </dependencies>
 
   <!-- ✅ Plugin Management -->
